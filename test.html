@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="//cdn.8thwall.com/web/aframe/aframe-extras-7.2.0.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>   -->
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    
+      <!-- <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script> -->
+
+    <!-- Include your JS files -->
+  <script type="module">
+    
+    import {responsiveImmersiveComponent} from './reflaction.js';
+    import {nextButtonComponent} from './AnimationPlay.js';
+
+    // Register custom A-Frame components
+    AFRAME.registerComponent('next-button', nextButtonComponent());
+    
+    AFRAME.registerComponent('reflacrtion-component', responsiveImmersiveComponent);
+    AFRAME.registerComponent('no-cull', {
+      init() {
+        this.el.addEventListener('model-loaded', () => {
+          this.el.object3D.traverse((obj) => {
+            obj.frustumCulled = false;
+          });
+        });
+      },
+      
+    });
+
+    AFRAME.registerComponent('gesture-controls', {
+        schema: {
+          enabled: { default: true }
+        },
+        
+        init: function () {
+          this.modelEntity = document.querySelector('#model');
+          this.model = this.modelEntity.object3D;
+
+          this.startDistance = 0;
+          this.startScale = new THREE.Vector3();
+          this.initScale = new THREE.Vector3();
+          this.startRotation = new THREE.Vector3();
+          this.initRotation = new THREE.Vector3();
+
+          this.bindMethods();
+          this.addEventListeners();
+        },
+        
+        bindMethods: function () {
+          this.onTouchStart = this.onTouchStart.bind(this);
+          this.onTouchMove = this.onTouchMove.bind(this);
+          this.onTouchEnd = this.onTouchEnd.bind(this);
+        },
+        
+        addEventListeners: function () {
+          const sceneEl = this.el.sceneEl;
+          sceneEl.addEventListener('touchstart', this.onTouchStart);
+          sceneEl.addEventListener('touchmove', this.onTouchMove);
+          sceneEl.addEventListener('touchend', this.onTouchEnd);
+        },
+        
+        removeEventListeners: function () {
+          const sceneEl = this.el.sceneEl;
+          sceneEl.removeEventListener('touchstart', this.onTouchStart);
+          sceneEl.removeEventListener('touchmove', this.onTouchMove);
+          sceneEl.removeEventListener('touchend', this.onTouchEnd);
+        },
+        
+        onTouchStart: function (event) {
+          console.log("touched")
+          if (event.touches.length === 1) {
+            this.startRotation.set(event.touches[0].pageX, event.touches[0].pageY, 0);
+            this.initRotation.copy(this.model.rotation);
+          }
+          
+          if (event.touches.length === 2) {
+            this.startDistance = this.getDistance(event.touches[0], event.touches[1]);
+            this.startScale.copy(this.model.scale);
+          }
+        },
+        
+        onTouchMove: function (event) {
+          if (event.touches.length === 1) {
+            const deltaX = event.touches[0].pageX - this.startRotation.x;
+            const deltaY = event.touches[0].pageY - this.startRotation.y;
+            
+            this.model.rotation.y = this.initRotation.y + deltaX * 0.01;
+            // this.model.rotation.x = this.initRotation.x + deltaY * 0.01;
+          }
+          
+          if (event.touches.length === 2) {
+            const currentDistance = this.getDistance(event.touches[0], event.touches[1]);
+            const scaleFactor = currentDistance / this.startDistance;
+            this.model.scale.set(
+              this.startScale.x * scaleFactor,
+              this.startScale.y * scaleFactor,
+              this.startScale.z * scaleFactor
+            );
+          }
+        },
+        
+        onTouchEnd: function (event) {
+          if (event.touches.length === 0) {
+            this.startDistance = 0;
+          }
+        },
+        
+        getDistance: function (touch1, touch2) {
+          const dx = touch1.pageX - touch2.pageX;
+          const dy = touch1.pageY - touch2.pageY;
+          return Math.sqrt(dx * dx + dy * dy);
+        },
+        
+        remove: function () {
+          this.removeEventListeners();
+        }
+      });
+
+      document.querySelector('a-scene').setAttribute('gesture-controls', '');
+  </script>
+  </head>
+  <body style='margin : 0px; overflow: hidden;'>
+
+  <div class="container" style='margin: 0px; overflow: hidden;'>
+    <div class="start-screen">
+      <img class="bg" src="./assets/images/view-transparent-crystal-water.png" />
+      <div class="overlay"></div>
+      <div class="nav">
+        <img src="./assets/images/logo.png" />
+      </div>
+
+      <div class="product-desc">
+        <p>Magic Convertible Inverter</p>
+        <p>Bottom Mount Refrigerator</p>
+      </div>
+
+      <img id="view-btn" src="./assets/images/view_in_ar_button.png" />
+      <img id="fridge" src="./assets/images/fridge.png" alt="Fridge Image" />
+
+      <div class="bottom-floor"></div>
+    </div>
+
+    <div class="ar-screen">
+      <!-- <img id="placeFridge" src="./assets/images/fridge.png" alt="Fridge Image" /> -->
+
+      <img class="tap-to-place" id="btn3" src="./assets/images/tap-to-place.png" />
+
+      <div class="carousel-container">
+        <div class="carousel-track-container">
+          <div class="activeBtn" id="nextbutton"></div>
+          <ul class="carousel-track">
+            <li class="carousel-slide current-slide">
+              <div id="bend" class="filter"></div>
+              <p>Reduce Bending</p>
+            </li>
+            <li class="carousel-slide">
+              <div id="led" class="filter"></div>
+              <p>Led Light</p>
+            </li>
+            <li class="carousel-slide">
+              <div id="twoX" class="filter"></div>
+              <p>2X Food Storage</p>
+            </li>
+            <li class="carousel-slide">
+              <div id="ice" class="filter"></div>
+              <p>Turbo Icing</p>
+            </li>
+            <li class="carousel-slide">
+              <div id="dualfan" class="filter"></div>
+              <p>Triple Inverter Fan</p>
+            </li>
+            <li class="carousel-slide">
+              <div id="modes" class="filter"></div>
+              <p>Convertable Mode</p>
+            </li>
+            <li class="carousel-slide">
+              <div id="toughglass" class="filter"></div>
+              <p>Toughned Glass</p>
+            </li>
+            <li class="carousel-slide">
+              <div id="shine" class="filter"></div>
+              <p>Glass Finish</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- <div class="top-info">
+        <img id="reduceBending" src="./assets/images/reduce-bending.png" />
+        <img src="./assets/images/led-light.png" />
+        <img src="./assets/images/2x-bigger.png" />
+        <img src="./assets/images/turbo-icing.png" />
+        <img src="./assets/images/triple-inverter.png" />
+        <img src="./assets/images/convertible-mode.png" />
+        <img src="./assets/images/toughened_glass.png" />
+        <img src="./assets/images/glass-finish.png" />
+      </div> -->
+
+      <div class="instruction-info">
+        <img src="./assets/images/rotate.png" />
+        <img src="./assets/images/zoom.png" />
+      </div>
+    </div>
+  </div>
+
+  <!-- <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" next-button  reflacrtion-component no-cull > -->
+    <a-scene  vr-mode-ui="enabled: false"
+    arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"   next-button  reflacrtion-component>
+
+    <!-- assets -->
+    <a-assets>
+      <!-- 3d models -->
+      <a-asset-item id="ref-glb" src="./assets/models/fridge_bake_6.glb"></a-asset-item>
+      <a-asset-item id="led-glb" src="./assets/models/led4.glb"></a-asset-item>
+      <a-asset-item id="bend-glb" src="./assets/models/bend_2.glb"></a-asset-item>
+      <a-asset-item id="ice-glb" src="./assets/models/ice.glb"></a-asset-item>
+      <a-asset-item id="fan-glb" src="./assets/models/dualfan_.glb"></a-asset-item>
+      <a-asset-item id="modes-glb" src="./assets/models/modes.glb"></a-asset-item>
+      <a-asset-item id="toughglass-glb" src="./assets/models/toughglass.glb"></a-asset-item>
+      <a-asset-item id="shine-glb" src="./assets/models/shine_1.glb"></a-asset-item>
+  
+      <!-- UI modelglb -->
+      <a-asset-item id="2xui_1" src="./assets/uimodels/2xui_1.glb"></a-asset-item>
+      <a-asset-item id="bendui_1" src="./assets/uimodels/bendui_1.glb"></a-asset-item>
+      <a-asset-item id="dualfanui" src="./assets/uimodels/dualfanui.glb"></a-asset-item>
+      <a-asset-item id="iceui" src="./assets/uimodels/iceui.glb"></a-asset-item>
+      <a-asset-item id="ledui_1" src="./assets/uimodels/ledui_1.glb"></a-asset-item>
+      <a-asset-item id="modeui" src="./assets/uimodels/modeui.glb"></a-asset-item>
+      <a-asset-item id="shineui" src="./assets/uimodels/shineui.glb"></a-asset-item>
+      <a-asset-item id="toughglassui" src="./assets/uimodels/toughglassui.glb"></a-asset-item>
+  
+      <!-- other assets -->
+      <video id="video" src="./assets/two_fan.mp4"></video>
+  
+      <a-asset-item id="ref-transparent" src="./assets/models/wire_ghost.glb"></a-asset-item>
+  
+      <img id="icon" src="./assets/images/rectangle-icon.png" />
+  
+      <source id="vol" src="" />
+      <source id="mute" src="" />
+  
+      <audio id="audio" loop>
+        <source src="././assets/bgMusic.mp3" type="audio/mpeg" />
+      </audio>
+    </a-assets>
+<!-- camera -->
+    <a-camera
+    wasd-controls-enabled="false"
+    look-controls-enabled="false"
+    rotation-reader
+    id="camera"
+    position="0 8 0"
+    raycaster="objects: .cantap"
+    cursor="fuse: false; rayOrigin: mouse; ">
+    
+  </a-camera>
+  <!-- <a-entity camera ></a-entity> -->
+  <!-- <a-sky id="skybox" radius="100"></a-sky> -->
+<!-- light -->
+
+
+<a-entity
+light="
+  type: directional;
+  intensity: 1;
+  castShadow: true;
+  shadowMapHeight:2048;
+  shadowMapWidth:2048;
+  shadowCameraTop: 20;
+  shadowCameraBottom: -20;
+  shadowCameraRight: 20;
+  shadowCameraLeft: -20;
+  target: #model"
+position="1 4.3 -15"
+shadow>
+<a-light type="ambient" intensity="1"></a-light>
+
+</a-entity>
+<a-entity
+id="model"
+gltf-model="#ref-glb"
+scale="4 4 4"
+rotation="0 0 0"
+position ="0 0 -20"
+visible="true"
+reflections="type: static"
+
+no-cull>
+<a-entity id="led-model" gltf-model="#led-glb"></a-entity>
+<a-entity id="bend-model" gltf-model="#bend-glb"></a-entity>
+<a-entity id="ice-model" gltf-model="#ice-glb"></a-entity>
+<a-entity id="fan-model" gltf-model="#fan-glb"></a-entity>
+<a-entity id="modes-model" gltf-model="#modes-glb"></a-entity>
+<a-entity id="toughglass-model" gltf-model="#toughglass-glb"></a-entity>
+<a-entity id="shine-model" gltf-model="#shine-glb"></a-entity>
+
+<!-- modelglb -->
+<a-entity id="2xui_1_model" gltf-model="#2xui_1"></a-entity>
+<a-entity id="bendui_1_model" gltf-model="#bendui_1"></a-entity>
+<a-entity id="dualfanui_model" gltf-model="#dualfanui"></a-entity>
+<a-entity id="iceui_model" gltf-model="#iceui"></a-entity>
+<a-entity id="ledui_1_model" gltf-model="#ledui_1"></a-entity>
+<a-entity id="modeui_model" gltf-model="#modeui"></a-entity>
+<a-entity id="shineui_model" gltf-model="#shineui"></a-entity>
+<a-entity id="toughglassui_model" gltf-model="#toughglassui"></a-entity>
+</a-entity>
+<!-- glb models -->
+
+
+<a-sound src="#audio" position="0 2 5"></a-sound>
+
+  </a-scene>
+  <!-- <video id="video1" autoplay style="display: block;"></video> -->
+  <!-- <script>
+    // Access the user's webcam
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+      const video = document.getElementById('video1');
+      video.srcObject = stream;
+      video.play();
+// chnage to sky box
+      // video.addEventListener('loadeddata', () => {
+      //     const skybox = document.querySelector('#skybox');
+      //     skybox.setAttribute('material', 'shader: flat; src: #video');
+      //   });
+    }).catch(function(err) {
+      console.error('Error accessing webcam: ' + err);
+    });
+  </script> -->
+    
+  </body>
+</html>
