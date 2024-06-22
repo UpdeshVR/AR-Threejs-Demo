@@ -1,0 +1,318 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  height: 100dvh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.start-screen,
+.bg,
+.ar-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100dvh;
+  width: 100%;
+}
+
+.start-screen {
+  display: block;
+}
+
+.ar-screen {
+  display: none;
+  background-color: transparent;
+  pointer-events: auto;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100dvh;
+  width: 100%;
+  background-color: blue;
+  opacity: 0.6;
+}
+
+.bg {
+  object-fit: cover;
+}
+
+.nav {
+  position: relative;
+  top: 0;
+  left: 0;
+  background-color: #0c5ca8;
+
+  width: 100%;
+  text-align: center;
+}
+
+.nav img {
+  width: 40vw;
+}
+
+.product-desc {
+  position: relative;
+  z-index: 1;
+  font-family: 'Roboto', sans-serif;
+  margin: 0 1rem;
+  color: #fff;
+  height: 30vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.product-desc p:first-child {
+  /* font-size: 24px; */
+  font-size: 6.2vw;
+  font-weight: 500;
+}
+
+.product-desc p:last-child {
+  /* font-size: 48px; */
+  font-size: 10vw;
+  font-weight: 800;
+}
+
+.bottom-floor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 14vh;
+  background: linear-gradient(180deg, #d9d9d9 -4.91%, #ededed -4.9%, #aaaaaa 90.8%);
+}
+
+#fridge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+  height: 63vh;
+  width: 60%;
+  object-fit: contain;
+}
+
+#view-btn {
+  position: absolute;
+  bottom: 10vh;
+  left: 6vw;
+  z-index: 2;
+  position: absolute;
+  width: 30%;
+  box-shadow: 10px 10px 18px #00000082;
+  pointer-events: auto;
+}
+
+#on,
+#off {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.tap-to-place {
+  position: absolute;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 40%;
+  pointer-events: auto;
+}
+
+#placeFridge {
+  position: absolute;
+  bottom: 20vh;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 70%;
+  max-height: 60vh;
+  object-fit: contain;
+  opacity: 0.5;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0% {
+    visibility: hidden;
+    opacity: 0.2;
+  }
+
+  50% {
+    visibility: visible;
+    opacity: 0.7;
+  }
+
+  100% {
+    visibility: hidden;
+    opacity: 0.2;
+  }
+}
+
+.carousel-container {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 100%;
+  /* Change to 100% */
+  max-width: 800px;
+  pointer-events: none;
+}
+
+.carousel-track-container {
+  width: 100%;
+  height: 100%;
+  margin: 8px auto;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(33.33%);
+  margin: 0;
+  padding: 0;
+}
+
+.carousel-slide {
+  min-width: 33.333%;
+  flex: 0 0 33.333%;
+  height: 16vh;
+  transition: transform 0.3s ease-in-out;
+  text-align: center;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter {
+  width: 10vh;
+  height: 10vh;
+  border-radius: 50%;
+  transition: transform 0.3s ease-in-out;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.carousel-slide.current-slide .filter {
+  transform: scale(1.4);
+  transform-origin: center center;
+}
+
+.carousel-slide.current-slide p {
+  display: block;
+}
+
+.carousel-slide p {
+  margin: 10px 0 0;
+  position: absolute;
+  bottom: -20px;
+  width: 100%;
+  font-size: 12px;
+  color: #000;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 900;
+  display: none;
+}
+
+.activeBtn {
+  width: 16vh;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid black;
+  z-index: 2;
+}
+
+#bend {
+  background-image: url('./assets/images/bend.png');
+}
+
+#led {
+  background-image: url('./assets/images/led.png');
+}
+
+#twoX {
+  background-image: url('./assets/images/twoX.png');
+}
+
+#ice {
+  background-image: url('./assets/images/ice.png');
+}
+
+#dualfan {
+  background-image: url('./assets/images/dualfan.png');
+}
+
+#modes {
+  background-image: url('./assets/images/modes.png');
+}
+
+#toughglass {
+  background-image: url('./assets/images/toughglass.png');
+}
+
+#toughglass {
+  background-image: url('./assets/images/toughglass.png');
+}
+
+#shine {
+  background-image: url('./assets/images/shine.png');
+}
+.top-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.top-info img {
+  width: 70%;
+  margin: 20px;
+  position: absolute;
+  display: none;
+}
+
+.instruction-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 30%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.instruction-info img {
+  width: 30vw;
+}
