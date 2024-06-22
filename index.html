@@ -12,19 +12,12 @@
 			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> ar - hit test<br/>(Chrome Android 81+)
 		</div>
 
-		<script type="importmap">
-			{
-				"imports": {
-					"three": "../build/three.module.js",
-					"three/addons/": "./jsm/"
-				}
-			}
-		</script>
+	
 
 		<script type="module">
 
-			import * as THREE from 'three';
-			import { ARButton } from 'three/addons/webxr/ARButton.js';
+			import * as THREE from './build/three.module.min.js';
+			import { ARButton } from './jsm/webxr/ARButton.js';
 
 			let container;
 			let camera, scene, renderer;
